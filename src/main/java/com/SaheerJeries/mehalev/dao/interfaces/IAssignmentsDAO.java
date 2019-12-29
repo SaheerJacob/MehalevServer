@@ -1,0 +1,49 @@
+package com.SaheerJeries.mehalev.dao.interfaces;
+
+import com.SaheerJeries.mehalev.errors.custom.ResultsNotFoundException;
+import com.SaheerJeries.mehalev.models.Assignment;
+import com.SaheerJeries.mehalev.models.vm.AssignmentVM;
+
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
+
+public interface IAssignmentsDAO extends IDAO<Assignment> {
+    /**
+     * @param  id
+     * * @param  currentPage
+     * * @param  limit
+     * @return array of assignments for employee
+     * @throws SQLException
+     * @throws ResultsNotFoundException
+     */
+    List<AssignmentVM> getAssignmentsByUserID(int id, int currentPage, int limit) throws SQLException, ResultsNotFoundException;
+    /**
+     * @param  managerID
+     * * @param  currentPage
+     * * @param  limit
+     * @return array of assignments requests for manager team
+     * @throws SQLException
+     * @throws ResultsNotFoundException
+     */
+    List<AssignmentVM> getAssignmentsRequestByManagerID(int managerID, int currentPage, int limit) throws SQLException, ResultsNotFoundException;
+    /**
+     * @param  managerID
+     * * @param requestedDate
+     * * @param  currentPage
+     * * @param  limit
+     * @return array of done assignments for manager team
+     * @throws SQLException
+     * @throws ResultsNotFoundException
+     */
+    List<AssignmentVM> getDoneAssignments(Integer managerID, Date requestedDate, Integer currentPage, Integer limit) throws SQLException;
+    /**
+     * @param  assignmentID
+     * * @param response
+     * @return message of success/failure in approving/not approving assignment request
+     * @throws SQLException
+     * @throws ResultsNotFoundException
+     */
+    String updatePendingApprovalStatus(Assignment assignmentID, boolean response) throws SQLException;
+    Integer countDoneAssignments() throws SQLException;
+}

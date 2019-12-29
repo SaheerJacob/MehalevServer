@@ -1,0 +1,100 @@
+package com.SaheerJeries.mehalev.controllers;
+
+
+import com.SaheerJeries.mehalev.dao.AssignmentsDAO;
+import com.SaheerJeries.mehalev.models.Assignment;
+import com.SaheerJeries.mehalev.models.vm.AssignmentVM;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.sql.Date;
+import java.sql.SQLException;
+import java.util.List;
+
+@RequestMapping("/assignments")
+@RestController
+@CrossOrigin(origins = "*" , allowCredentials = "true")
+public class AssignmentsController {
+    @Autowired
+    private AssignmentsDAO assignmentsDAO;
+
+    /**
+     *
+     * @param assignment
+     * @return new added assignment
+     * @throws SQLException
+     */
+
+    @PostMapping("")
+    public ResponseEntity<Assignment> addAssignment(@RequestBody Assignment assignment) throws Exception {
+        return ResponseEntity.ok().body(assignmentsDAO.add(assignment));
+    }
+
+    /**
+     *
+     * @param employeeID
+     * @param page
+     * @param limit
+     * @return assignments history for employee
+     * @throws SQLException
+     */
+
+    @GetMapping("/{id}")
+    public ResponseEntity<List<AssignmentVM>> getAssignmentsHistoryForEmployee(@PathVariable("id") int employeeID, @RequestParam int page, @RequestParam int limit) throws SQLException {
+        List<AssignmentVM> assignments = assignmentsDAO.getAssignmentsByUserID(employeeID, page, limit);
+        return ResponseEntity.ok().body(assignments);
+    }
+
+    /**
+     *
+     * @param managerID
+     * @param page
+     * @param limit
+     * @return assignments requests for manager team
+     * @throws SQLException
+     */
+
+    @GetMapping("/request/{id}")
+    public ResponseEntity<List<AssignmentVM>> getAssignmentsRequestByManagerID(@PathVariable("id") int managerID, @RequestParam int page, @RequestParam int limit) throws SQLException {
+        List<AssignmentVM> assignmentsRequest = assignmentsDAO.getAssignmentsRequestByManagerID(managerID, page, limit);
+        return ResponseEntity.ok().body(assignmentsRequest);
+    }
+
+    /**
+     *
+     * @param assignment
+     * @param response
+     * @return message of success/failure in approving/not approving assignment request
+     * @throws SQLException
+     */
+
+    @PostMapping("/status")
+    public ResponseEntity<String> updatePendingApprovalStatus(@RequestBody Assignment assignment, @RequestParam boolean response) throws SQLException {
+        String message = assignmentsDAO.updatePendingApprovalStatus(assignment, response);
+        return ResponseEntity.ok().body(message);
+    }
+
+    /**
+     *
+     * @param managerID
+     * @param requestedDate
+     ** @param page
+     * @param limit
+     * @return team done assignments for manager
+     * @throws SQLException
+     */
+
+    @GetMapping("/done/{id}")
+    public ResponseEntity<List<AssignmentVM>> getDoneAssignments(@PathVariable("id") Integer managerID,
+                                                                 @RequestParam String requestedDate,
+                                                                 @RequestParam Integer page, @RequestParam Integer limit) throws SQLException {
+        List<AssignmentVM> doneAssignments = assignmentsDAO.getDoneAssignments(managerID, Date.valueOf(requestedDate), page, limit);
+        return ResponseEntity.ok().body(doneAssignments);
+    }
+    @GetMapping("/count")
+    public ResponseEntity<Integer> countAssignments() throws SQLException {
+        return ResponseEntity.ok().body(assignmentsDAO.countDoneAssignments());
+    }
+
+}
